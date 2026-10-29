@@ -27,7 +27,7 @@ powershell -ExecutionPolicy Bypass -File source/test.ps1
 
 ## 界面预览
 
-使用当前源码实际控件离屏渲染的演示界面；没有采集真实按键、桌面或个人配置。
+程序在 Windows 上实际运行时的截图：按键屏显显示的是真实按键事件（Ctrl + Shift + S），设置窗口为真实界面；截图未包含桌面、任务栏或个人配置。
 
 ![按键显示示例](docs/screenshots/overlay-demo.png)
 ![设置界面示例](docs/screenshots/settings-demo.png)
