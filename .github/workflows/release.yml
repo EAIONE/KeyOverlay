@@ -1,0 +1,29 @@
+name: Windows release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test and build
+        shell: powershell
+        run: |
+          & ./source/test.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+          New-Item release/KeyOverlay -ItemType Directory -Force | Out-Null
+          & ./source/build.ps1 -OutputPath "$pwd/release/KeyOverlay/KeyOverlay.exe"
+          Copy-Item README.txt,THIRD-PARTY.txt release/KeyOverlay/
+          Compress-Archive release/KeyOverlay release/KeyOverlay-Windows.zip
+      - name: Publish download
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $tag = 'windows-' + (Get-Date -Format yyyy.MM.dd) + '.' + '${{ github.run_number }}'
+          gh release create $tag release/KeyOverlay-Windows.zip --target '${{ github.sha }}' --title "KeyOverlay $tag" --notes 'Windows portable build. Extract and run KeyOverlay.exe. Includes third-party license notices.'
